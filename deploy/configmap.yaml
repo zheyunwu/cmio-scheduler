@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmio-scheduler-config
+  namespace: kube-system
+data:
+  cmio-scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    # leaderElection:
+    #   leaderElect: true
+    #   resourceName: cmio-scheduler
+    #   resourceNamespace: kube-system
+    profiles:
+      - schedulerName: cmio-scheduler
+        plugins:
+          score:
+            disabled:
+            - name: "*"
+            enabled:
+            - name: "AvaCPU"
+            - name: "AvaMem"
+            - name: "NFS"
+      - schedulerName: io-scheduler
+        plugins:
+          score:
+            disabled:
+            - name: "*"
+            enabled:
+            - name: "NFS"

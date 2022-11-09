@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: io-scheduler-config
+  namespace: kube-system
+data:
+  io-scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: io-scheduler
+        plugins:
+          score:
+            disabled:
+            - name: "*"
+            enabled:
+            - name: "NFS"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: io-scheduler
+    tier: control-plane
+  name: io-scheduler
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: io-scheduler
+      tier: control-plane
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: io-scheduler
+        tier: control-plane
+    spec:
+      serviceAccountName: cmio-scheduler-sa
+      priorityClassName: system-cluster-critical
+      nodeSelector:
+        kubernetes.io/hostname: k8s-master
+      containers:
+      - command:
+        - /usr/local/bin/io-scheduler
+        - --config=/etc/kubernetes/io-scheduler/io-scheduler-config.yaml
+        - --v=3
+        - '--authentication-kubeconfig=/etc/kubernetes/scheduler.conf'
+        - '--authorization-kubeconfig=/etc/kubernetes/scheduler.conf'
+        - '--bind-address=127.0.0.1'
+        - '--kubeconfig=/etc/kubernetes/scheduler.conf'
+        image: 192.168.178.109:30002/bigdata/io-scheduler:0.0.15
+        name: io-scheduler
+        resources:
+          requests:
+            cpu: '0.2'
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/kubernetes/io-scheduler
+          - name: kubeconfig
+            readOnly: true
+            mountPath: /etc/kubernetes/scheduler.conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: io-scheduler-config
+        - name: kubeconfig
+          hostPath:
+            path: /etc/kubernetes/scheduler.conf
+            type: FileOrCreate

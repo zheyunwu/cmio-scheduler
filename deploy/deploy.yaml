@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: scheduler
+    tier: control-plane
+  name: cmio-scheduler
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+      tier: control-plane
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: scheduler
+        tier: control-plane
+        version: second
+    spec:
+      serviceAccountName: cmio-scheduler-sa
+      priorityClassName: system-cluster-critical
+      nodeSelector:
+        kubernetes.io/hostname: k8s-master
+      containers:
+      - command:
+        - /usr/local/bin/cmio-scheduler
+        - --config=/etc/kubernetes/cmio-scheduler/cmio-scheduler-config.yaml
+        - --v=3
+        - '--authentication-kubeconfig=/etc/kubernetes/scheduler.conf'
+        - '--authorization-kubeconfig=/etc/kubernetes/scheduler.conf'
+        - '--bind-address=127.0.0.1'
+        - '--kubeconfig=/etc/kubernetes/scheduler.conf'
+        image: 192.168.178.109:30002/bigdata/cmio-scheduler:0.0.1
+        name: cmio-scheduler
+        resources:
+          requests:
+            cpu: '0.2'
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/kubernetes/cmio-scheduler
+          - name: kubeconfig
+            readOnly: true
+            mountPath: /etc/kubernetes/scheduler.conf
+      volumes:
+        - name: config-volume
+          configMap:
+            name: cmio-scheduler-config
+        - name: kubeconfig
+          hostPath:
+            path: /etc/kubernetes/scheduler.conf
+            type: FileOrCreate
