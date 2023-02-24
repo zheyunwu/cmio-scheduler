@@ -32,7 +32,7 @@ spec:
         - '--authorization-kubeconfig=/etc/kubernetes/scheduler.conf'
         - '--bind-address=127.0.0.1'
         - '--kubeconfig=/etc/kubernetes/scheduler.conf'
-        image: 192.168.178.109:30002/bigdata/cmio-scheduler:0.0.1
+        image: localhost:30002/cmio-scheduler:0.0.1
         name: cmio-scheduler
         resources:
           requests:
