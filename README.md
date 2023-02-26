@@ -10,6 +10,12 @@ This project is the work of the master thesis "[An I/O-aware scheduler for conta
 
 Zheyun Wu @ KTH Royal Institute of Technology
 
+## Prerequisites
+
+### Container Registry
+
+This project assumes that there is a container registry server running on localhost:30002
+
 ## Usage
 
 ### Build CMIO-scheduler
@@ -20,7 +26,7 @@ cd cmio-scheduler
 go build
 ```
 
-### Prepare the Docker Image
+### Package the CMIO-scheduler executable as a Docker image
 
 ```bash
 docker build -t localhost:30002/cmio-scheduler:0.0.1 .
