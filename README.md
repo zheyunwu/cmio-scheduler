@@ -4,7 +4,7 @@ CMIO-scheduler is a Kubernetes scheduler based on the [*Scheduling Framework*](h
 
 ## Description
 
-This project is the work of the master thesis "[An I/O-aware scheduler for containerized data-intensive HPC tasks in Kubernetes-based heterogeneous clusters](http://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1725008&dswid=5071)".
+This project is the implementation of a Kubernetes scheduler proposed in the master thesis "[An I/O-aware scheduler for containerized data-intensive HPC tasks in Kubernetes-based heterogeneous clusters](http://kth.diva-portal.org/smash/record.jsf?pid=diva2%3A1725008&dswid=5071)".
 
 ## Author
 
